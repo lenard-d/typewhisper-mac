@@ -167,6 +167,7 @@ enum SettingsBackupExporter {
         var showMenuBarIcon: Bool? = nil
         var dockIconBehaviorWhenMenuBarHidden: String? = nil
         // Dictation
+        var audioMuffleEnabled: Bool? = nil
         var audioDuckingEnabled: Bool? = nil
         var audioDuckingLevel: Double? = nil
         var soundFeedbackEnabled: Bool? = nil
@@ -221,6 +222,7 @@ enum SettingsBackupExporter {
             if translationTargetLanguage != nil { count += 1 }
             if showMenuBarIcon != nil { count += 1 }
             if dockIconBehaviorWhenMenuBarHidden != nil { count += 1 }
+            if audioMuffleEnabled != nil { count += 1 }
             if audioDuckingEnabled != nil { count += 1 }
             if audioDuckingLevel != nil { count += 1 }
             if soundFeedbackEnabled != nil { count += 1 }
@@ -572,6 +574,7 @@ enum SettingsBackupExporter {
                 translationTargetLanguage: userDefaults.string(forKey: UserDefaultsKeys.translationTargetLanguage),
                 showMenuBarIcon: userDefaults.object(forKey: UserDefaultsKeys.showMenuBarIcon) as? Bool,
                 dockIconBehaviorWhenMenuBarHidden: userDefaults.string(forKey: UserDefaultsKeys.dockIconBehaviorWhenMenuBarHidden),
+                audioMuffleEnabled: userDefaults.object(forKey: UserDefaultsKeys.audioMuffleEnabled) as? Bool,
                 audioDuckingEnabled: userDefaults.object(forKey: UserDefaultsKeys.audioDuckingEnabled) as? Bool,
                 audioDuckingLevel: userDefaults.object(forKey: UserDefaultsKeys.audioDuckingLevel) as? Double,
                 soundFeedbackEnabled: userDefaults.object(forKey: UserDefaultsKeys.soundFeedbackEnabled) as? Bool,
@@ -858,6 +861,7 @@ enum SettingsBackupExporter {
         apply(preferences.translationTargetLanguage, forKey: UserDefaultsKeys.translationTargetLanguage)
         apply(preferences.showMenuBarIcon, forKey: UserDefaultsKeys.showMenuBarIcon)
         apply(preferences.dockIconBehaviorWhenMenuBarHidden, forKey: UserDefaultsKeys.dockIconBehaviorWhenMenuBarHidden)
+        apply(preferences.audioMuffleEnabled, forKey: UserDefaultsKeys.audioMuffleEnabled)
         apply(preferences.audioDuckingEnabled, forKey: UserDefaultsKeys.audioDuckingEnabled)
         apply(preferences.audioDuckingLevel, forKey: UserDefaultsKeys.audioDuckingLevel)
         apply(preferences.soundFeedbackEnabled, forKey: UserDefaultsKeys.soundFeedbackEnabled)

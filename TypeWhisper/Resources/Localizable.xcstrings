@@ -1,6 +1,160 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Audio Muffle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio-Dämpfung"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音声マッフル"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音频低通滤波"
+          }
+        }
+      }
+    },
+    "Muffle system audio during recording": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Systemaudio während der Aufnahme dumpf wiedergeben"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "録音中にシステム音声をこもらせる"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "录音时降低系统音频的高频"
+          }
+        }
+      }
+    },
+    "Keeps music playing with reduced high frequencies. Requires macOS 14.2 and system audio permission. Enabling muffle turns off media pause.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Musik läuft mit reduzierten Höhen weiter. Erfordert macOS 14.2 und die Berechtigung für Systemaudio. Audio-Dämpfung deaktiviert die Medienpause."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高音域を抑えながら音楽の再生を続けます。macOS 14.2とシステム音声の許可が必要です。有効にするとメディアの一時停止がオフになります。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在降低高频的同时继续播放音乐。需要 macOS 14.2 和系统音频权限。启用此功能会关闭媒体暂停。"
+          }
+        }
+      }
+    },
+    "Audio output changed. Muffle stopped.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audioausgabe geändert. Audio-Dämpfung beendet."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音声出力が変更されました。マッフルを停止しました。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音频输出已更改。低通滤波已停止。"
+          }
+        }
+      }
+    },
+    "Audio muffle requires macOS 14.2 or later.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio-Dämpfung erfordert macOS 14.2 oder neuer."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音声マッフルにはmacOS 14.2以降が必要です。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音频低通滤波需要 macOS 14.2 或更高版本。"
+          }
+        }
+      }
+    },
+    "Audio muffle requires a mono or stereo Float32 output device.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio-Dämpfung erfordert ein Mono- oder Stereo-Ausgabegerät mit Float32-Format."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音声マッフルにはモノラルまたはステレオのFloat32出力デバイスが必要です。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音频低通滤波需要单声道或立体声 Float32 输出设备。"
+          }
+        }
+      }
+    },
+    "Could not start audio muffle. Allow system audio access in System Settings and try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio-Dämpfung konnte nicht gestartet werden. Erlaube den Zugriff auf Systemaudio in den Systemeinstellungen und versuche es erneut."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音声マッフルを開始できませんでした。システム設定でシステム音声へのアクセスを許可して、再試行してください。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法启动音频低通滤波。请在系统设置中允许系统音频访问，然后重试。"
+          }
+        }
+      }
+    },
     "Update %@" : {
       "localizations" : {
         "de" : {

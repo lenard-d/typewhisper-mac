@@ -322,6 +322,7 @@ private struct DiagnosticsReport: Encodable {
     struct AudioInfo: Encodable {
         let selectedInputDeviceUID: String?
         let selectedInputDeviceName: String?
+        let audioMuffleEnabled: Bool
         let audioDuckingEnabled: Bool
         let audioDuckingLevel: Double
         let mediaPauseEnabled: Bool
@@ -611,6 +612,7 @@ final class ErrorLogService: ObservableObject {
             audio: .init(
                 selectedInputDeviceUID: defaults.string(forKey: UserDefaultsKeys.selectedInputDeviceUID),
                 selectedInputDeviceName: container.audioDeviceService.selectedDevice?.name,
+                audioMuffleEnabled: defaults.bool(forKey: UserDefaultsKeys.audioMuffleEnabled),
                 audioDuckingEnabled: defaults.bool(forKey: UserDefaultsKeys.audioDuckingEnabled),
                 audioDuckingLevel: defaults.object(forKey: UserDefaultsKeys.audioDuckingLevel) as? Double ?? 0.2,
                 mediaPauseEnabled: defaults.bool(forKey: UserDefaultsKeys.mediaPauseEnabled),

@@ -689,6 +689,7 @@ final class SettingsBackupExporterTests: XCTestCase {
         source.userDefaults.set("de", forKey: UserDefaultsKeys.selectedLanguage)
         source.userDefaults.set(true, forKey: UserDefaultsKeys.translationEnabled)
         source.userDefaults.set(false, forKey: UserDefaultsKeys.showMenuBarIcon)
+        source.userDefaults.set(true, forKey: UserDefaultsKeys.audioMuffleEnabled)
         source.userDefaults.set(0.35, forKey: UserDefaultsKeys.audioDuckingLevel)
         source.userDefaults.set(3, forKey: UserDefaultsKeys.indicatorTranscriptPreviewFontSizeOffset)
         source.userDefaults.set("overlay", forKey: UserDefaultsKeys.indicatorStyle)
@@ -716,6 +717,7 @@ final class SettingsBackupExporterTests: XCTestCase {
         XCTAssertEqual(backup.preferences.selectedLanguage, "de")
         XCTAssertEqual(backup.preferences.translationEnabled, true)
         XCTAssertEqual(backup.preferences.showMenuBarIcon, false)
+        XCTAssertEqual(backup.preferences.audioMuffleEnabled, true)
         XCTAssertEqual(backup.preferences.audioDuckingLevel, 0.35)
         XCTAssertEqual(backup.preferences.indicatorTranscriptPreviewFontSizeOffset, 3)
         XCTAssertEqual(backup.preferences.indicatorStyle, "overlay")
@@ -751,6 +753,7 @@ final class SettingsBackupExporterTests: XCTestCase {
             recoveryRetentionPolicyDidChange: { appliedRecoveryRetentionPolicy = $0 }
         )
 
+        XCTAssertTrue(destination.userDefaults.bool(forKey: UserDefaultsKeys.audioMuffleEnabled))
         XCTAssertTrue(result.updateChannelApplied)
         XCTAssertGreaterThanOrEqual(result.preferencesApplied, 8)
         XCTAssertEqual(destination.userDefaults.string(forKey: UserDefaultsKeys.updateChannel), AppConstants.ReleaseChannel.daily.rawValue)

@@ -256,6 +256,15 @@ final class DictationViewModel: ObservableObject {
     @Published var partialText: String = ""
     @Published var isStreaming: Bool = false
     @Published private(set) var externalStreamingDisplayCount: Int = 0
+    @Published var audioMuffleEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(audioMuffleEnabled, forKey: UserDefaultsKeys.audioMuffleEnabled)
+            if audioMuffleEnabled { mediaPauseEnabled = false }
+            if !audioMuffleEnabled { audioMuffleService.stop() }
+            audioMuffleError = nil
+        }
+    }
+    @Published private(set) var audioMuffleError: String?
     @Published var audioDuckingEnabled: Bool {
         didSet { UserDefaults.standard.set(audioDuckingEnabled, forKey: UserDefaultsKeys.audioDuckingEnabled) }
     }
@@ -295,7 +304,10 @@ final class DictationViewModel: ObservableObject {
         didSet { UserDefaults.standard.set(preserveClipboard, forKey: UserDefaultsKeys.preserveClipboard) }
     }
     @Published var mediaPauseEnabled: Bool {
-        didSet { UserDefaults.standard.set(mediaPauseEnabled, forKey: UserDefaultsKeys.mediaPauseEnabled) }
+        didSet {
+            UserDefaults.standard.set(mediaPauseEnabled, forKey: UserDefaultsKeys.mediaPauseEnabled)
+            if mediaPauseEnabled { audioMuffleEnabled = false }
+        }
     }
     @Published var transcribeShortQuietClipsAggressively: Bool {
         didSet { Self.persistTranscribeShortQuietClipsAggressively(transcribeShortQuietClipsAggressively) }
@@ -391,6 +403,7 @@ final class DictationViewModel: ObservableObject {
     private let profileService: ProfileService
     private let workflowService: WorkflowService
     private let translationService: AnyObject? // TranslationService (macOS 15+)
+    private let audioMuffleService: AudioMuffling
     private let audioDuckingService: AudioDuckingService
     private let dictionaryService: DictionaryService
     private let licenseService: LicenseService?
@@ -555,6 +568,7 @@ final class DictationViewModel: ObservableObject {
         workflowService: WorkflowService,
         translationService: AnyObject?,
         audioDuckingService: AudioDuckingService,
+        audioMuffleService: AudioMuffling = AudioMuffleService(),
         dictionaryService: DictionaryService,
         licenseService: LicenseService? = nil,
         targetAppCorrectionLearningService: TargetAppCorrectionLearningService? = nil,
@@ -589,6 +603,7 @@ final class DictationViewModel: ObservableObject {
         self.profileService = profileService
         self.workflowService = workflowService
         self.translationService = translationService
+        self.audioMuffleService = audioMuffleService
         self.audioDuckingService = audioDuckingService
         self.dictionaryService = dictionaryService
         self.licenseService = licenseService
@@ -687,6 +702,7 @@ final class DictationViewModel: ObservableObject {
             profileService: profileService,
             workflowService: workflowService
         )
+        self.audioMuffleEnabled = UserDefaults.standard.bool(forKey: UserDefaultsKeys.audioMuffleEnabled)
         self.audioDuckingEnabled = UserDefaults.standard.bool(forKey: UserDefaultsKeys.audioDuckingEnabled)
         self.audioDuckingLevel = UserDefaults.standard.object(forKey: UserDefaultsKeys.audioDuckingLevel) as? Double ?? 0.2
         self.soundFeedbackEnabled = UserDefaults.standard.object(forKey: UserDefaultsKeys.soundFeedbackEnabled) as? Bool ?? true
@@ -1262,6 +1278,7 @@ final class DictationViewModel: ObservableObject {
     }
 
     private func restoreRecordingSideEffects() {
+        audioMuffleService.stop()
         audioDuckingService.restoreAudio()
         mediaPlaybackService.resumeIfWePaused()
         recordingUsesBluetoothInput = false
@@ -1845,7 +1862,7 @@ final class DictationViewModel: ObservableObject {
                     self.finishCancellation(message: String(localized: "Cancelled"))
                     return
                 }
-                if selectedInputUsesBluetooth, self.mediaPauseEnabled {
+                if selectedInputUsesBluetooth, self.mediaPauseEnabled, !self.audioMuffleEnabled {
                     self.recordingRestoresSystemAudio = await self.mediaPlaybackService.pauseImmediatelyIfPlaying()
                     try Task.checkCancellation()
                     guard self.activeDictationSessionID == sessionID else { return }
@@ -1968,9 +1985,21 @@ final class DictationViewModel: ObservableObject {
         if selectedInputUsesBluetooth {
             logger.info("Skipping recording start sound for Bluetooth input device")
         }
-        if mediaPauseEnabled, !selectedInputUsesBluetooth {
+        if mediaPauseEnabled, !audioMuffleEnabled, !selectedInputUsesBluetooth {
             recordingRestoresSystemAudio = true
             mediaPlaybackService.pauseIfPlaying()
+        }
+        if audioMuffleEnabled {
+            audioMuffleError = nil
+            do {
+                try audioMuffleService.start { [weak self] message in
+                    self?.audioMuffleError = message
+                }
+                recordingRestoresSystemAudio = true
+            } catch {
+                audioMuffleError = error.localizedDescription
+                logger.warning("Audio muffle failed: \(error.localizedDescription, privacy: .public)")
+            }
         }
         if audioDuckingEnabled {
             recordingRestoresSystemAudio = true

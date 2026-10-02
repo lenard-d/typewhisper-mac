@@ -1295,6 +1295,21 @@ struct RecordingSettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section(String(localized: "Audio Muffle")) {
+                Toggle(String(localized: "Muffle system audio during recording"), isOn: $dictation.audioMuffleEnabled)
+                    .disabled(!ProcessInfo.processInfo.isOperatingSystemAtLeast(
+                        OperatingSystemVersion(majorVersion: 14, minorVersion: 2, patchVersion: 0)
+                    ))
+                Text(String(localized: "Keeps music playing with reduced high frequencies. Requires macOS 14.2 and system audio permission. Enabling muffle turns off media pause."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if let message = dictation.audioMuffleError {
+                    Text(message)
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+            }
+
                 Section(String(localized: "Audio Ducking")) {
                 Toggle(String(localized: "Reduce system volume during recording"), isOn: $dictation.audioDuckingEnabled)
 

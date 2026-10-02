@@ -128,7 +128,9 @@ enum AppConstants {
 
     static let appSupportDirectoryName: String = {
         #if DEBUG
-        return "TypeWhisper-Dev"
+        // Alternate debug bundle IDs use separate data for local feature tests.
+        let identifier = Bundle.main.bundleIdentifier ?? "com.typewhisper.mac.dev"
+        return identifier == "com.typewhisper.mac.dev" ? "TypeWhisper-Dev" : identifier
         #else
         return "TypeWhisper"
         #endif
@@ -139,7 +141,7 @@ enum AppConstants {
             return "com.typewhisper.mac.screenshots.apikey."
         }
         #if DEBUG
-        return "com.typewhisper.mac.dev.apikey."
+        return "\(Bundle.main.bundleIdentifier ?? "com.typewhisper.mac.dev").apikey."
         #else
         return "com.typewhisper.mac.apikey."
         #endif
@@ -163,7 +165,7 @@ enum AppConstants {
             return "com.typewhisper.mac.tests.premium-account"
         }
         if isDevelopment {
-            return "com.typewhisper.mac.dev.premium-account"
+            return "\(Bundle.main.bundleIdentifier ?? "com.typewhisper.mac.dev").premium-account"
         }
         return "com.typewhisper.mac.premium-account"
     }

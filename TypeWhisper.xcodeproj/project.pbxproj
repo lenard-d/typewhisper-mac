@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D3AF00000000000000000007 /* AudioMuffleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3AF00000000000000000006 /* AudioMuffleTests.swift */; };
+		D3AF00000000000000000004 /* AudioMuffleFilter.c in Sources */ = {isa = PBXBuildFile; fileRef = D3AF00000000000000000003 /* AudioMuffleFilter.c */; };
+		D3AF00000000000000000002 /* AudioMuffleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3AF00000000000000000001 /* AudioMuffleService.swift */; };
 		D47A00000000000000000005 /* UserDataExportAndEraseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47A00000000000000000006 /* UserDataExportAndEraseTests.swift */; };
 		D47A00000000000000000003 /* UserDataEraser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47A00000000000000000004 /* UserDataEraser.swift */; };
 		D47A00000000000000000001 /* UserDataExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47A00000000000000000002 /* UserDataExportService.swift */; };
@@ -714,6 +717,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D3AF00000000000000000006 /* AudioMuffleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMuffleTests.swift; sourceTree = "<group>"; };
+		D3AF00000000000000000005 /* AudioMuffleFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioMuffleFilter.h; sourceTree = "<group>"; };
+		D3AF00000000000000000003 /* AudioMuffleFilter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = AudioMuffleFilter.c; sourceTree = "<group>"; };
+		D3AF00000000000000000001 /* AudioMuffleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMuffleService.swift; sourceTree = "<group>"; };
 		D47A00000000000000000006 /* UserDataExportAndEraseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataExportAndEraseTests.swift; sourceTree = "<group>"; };
 		D47A00000000000000000004 /* UserDataEraser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataEraser.swift; sourceTree = "<group>"; };
 		D47A00000000000000000002 /* UserDataExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataExportService.swift; sourceTree = "<group>"; };
@@ -1958,6 +1965,9 @@
 				BB000000000000000A123601 /* WorkflowTextSegmenter.swift */,
 				BB000000000000000A123602 /* WorkflowSegmentedPostProcessing.swift */,
 				BB00000000000000000073 /* TranslationService.swift */,
+				D3AF00000000000000000001 /* AudioMuffleService.swift */,
+				D3AF00000000000000000003 /* AudioMuffleFilter.c */,
+				D3AF00000000000000000005 /* AudioMuffleFilter.h */,
 				BB00000000000000000074 /* AudioDuckingService.swift */,
 				BB00000000000000000273 /* MediaPlaybackService.swift */,
 				BB00000000000000000079 /* DictionaryService.swift */,
@@ -2920,6 +2930,7 @@
 				CA2F00000000000000000001 /* MeetingLinkParserTests.swift */,
 				CA2F00000000000000000002 /* BrowserURLResolverTests.swift */,
 				CA2F00000000000000000003 /* CalendarMeetingEventProviderTests.swift */,
+				D3AF00000000000000000006 /* AudioMuffleTests.swift */,
 				CA2F00000000000000000004 /* MeetingAudioActivityCollectorTests.swift */,
 				CA4F00000000000000000002 /* MeetingCameraActivityCollectorTests.swift */,
 				CA2F00000000000000000005 /* CalendarMeetingAutomationPolicyTests.swift */,
@@ -4849,6 +4860,7 @@
 				CA2E00000000000000000001 /* MeetingLinkParserTests.swift in Sources */,
 				CA2E00000000000000000002 /* BrowserURLResolverTests.swift in Sources */,
 				CA2E00000000000000000003 /* CalendarMeetingEventProviderTests.swift in Sources */,
+				D3AF00000000000000000007 /* AudioMuffleTests.swift in Sources */,
 				CA2E00000000000000000004 /* MeetingAudioActivityCollectorTests.swift in Sources */,
 				CA4E00000000000000000002 /* MeetingCameraActivityCollectorTests.swift in Sources */,
 				CA2E00000000000000000005 /* CalendarMeetingAutomationPolicyTests.swift in Sources */,
@@ -5064,6 +5076,8 @@
 				AA00000000000000000068 /* ProfilesSettingsView.swift in Sources */,
 				AA00000000000000000070 /* UpdateChecker.swift in Sources */,
 				AA00000000000000000073 /* TranslationService.swift in Sources */,
+				D3AF00000000000000000002 /* AudioMuffleService.swift in Sources */,
+				D3AF00000000000000000004 /* AudioMuffleFilter.c in Sources */,
 				AA00000000000000000074 /* AudioDuckingService.swift in Sources */,
 				AA00000000000000000285 /* MediaPlaybackService.swift in Sources */,
 				AA00000000000000000075 /* TranslationHostWindow.swift in Sources */,

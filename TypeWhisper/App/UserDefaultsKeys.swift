@@ -4,6 +4,7 @@ import Foundation
 /// Prevents typo-induced bugs and makes keys discoverable via autocomplete.
 enum UserDefaultsKeys {
     // MARK: - Dictation
+    static let audioMuffleEnabled = "audioMuffleEnabled"
     static let audioDuckingEnabled = "audioDuckingEnabled"
     static let audioDuckingLevel = "audioDuckingLevel"
     static let soundFeedbackEnabled = "soundFeedbackEnabled"

@@ -1781,6 +1781,119 @@ final class TypeWhisperIntegrationTests: XCTestCase {
     }
 
     @MainActor
+    private final class MockAudioMuffleService: AudioMuffling {
+        var starts = 0
+        var stops = 0
+        var onStop: (() -> Void)?
+        var startError: Error?
+
+        func start(onFailure: @escaping @MainActor (String) -> Void) throws {
+            starts += 1
+            if let startError { throw startError }
+        }
+
+        func stop() {
+            stops += 1
+            onStop?()
+        }
+    }
+
+    @MainActor
+    func testAudioMuffleStartsAfterMicrophoneAndStopsOnCancel() async throws {
+        let directory = try TestSupport.makeTemporaryDirectory()
+        defer { TestSupport.remove(directory) }
+        let muffle = MockAudioMuffleService()
+        let context = Self.makeDictationContext(appSupportDirectory: directory, audioMuffleService: muffle)
+        context.dictationViewModel.audioMuffleEnabled = true
+        defer { context.dictationViewModel.audioMuffleEnabled = false }
+        context.audioRecordingService.hasMicrophonePermissionOverride = true
+        context.audioRecordingService.inputAvailabilityOverride = { _ in true }
+        context.audioRecordingService.startRecordingOverride = { XCTAssertEqual(muffle.starts, 0) }
+        _ = context.dictationViewModel.apiStartRecording()
+        await context.dictationViewModel.testingWaitForRecordingStart()
+        XCTAssertEqual(muffle.starts, 1)
+        let previousStops = muffle.stops
+        context.dictationViewModel.handleCancelHotkey()
+        context.dictationViewModel.handleCancelHotkey()
+        await context.dictationViewModel.testingWaitForRecordingCleanup()
+        XCTAssertGreaterThan(muffle.stops, previousStops)
+    }
+
+    @MainActor
+    func testAudioMuffleStopsWhenRecordingEnds() async throws {
+        let directory = try TestSupport.makeTemporaryDirectory()
+        defer { TestSupport.remove(directory) }
+        let muffle = MockAudioMuffleService()
+        let context = Self.makeDictationContext(appSupportDirectory: directory, audioMuffleService: muffle)
+        context.dictationViewModel.audioMuffleEnabled = true
+        defer { context.dictationViewModel.audioMuffleEnabled = false }
+        context.audioRecordingService.hasMicrophonePermissionOverride = true
+        context.audioRecordingService.inputAvailabilityOverride = { _ in true }
+        context.audioRecordingService.startRecordingOverride = {}
+        context.audioRecordingService.stopRecordingOverride = { _ in [] }
+        _ = context.dictationViewModel.apiStartRecording()
+        await context.dictationViewModel.testingWaitForRecordingStart()
+        let stopped = expectation(description: "Muffle stopped")
+        muffle.onStop = { stopped.fulfill() }
+        _ = context.dictationViewModel.apiStopRecording()
+        await fulfillment(of: [stopped], timeout: 1)
+        muffle.onStop = nil
+    }
+
+    @MainActor
+    func testAudioMuffleDoesNotStartWhenMicrophoneFails() async throws {
+        let directory = try TestSupport.makeTemporaryDirectory()
+        defer { TestSupport.remove(directory) }
+        let muffle = MockAudioMuffleService()
+        let context = Self.makeDictationContext(appSupportDirectory: directory, audioMuffleService: muffle)
+        context.dictationViewModel.audioMuffleEnabled = true
+        defer { context.dictationViewModel.audioMuffleEnabled = false }
+        context.audioRecordingService.hasMicrophonePermissionOverride = true
+        context.audioRecordingService.inputAvailabilityOverride = { _ in true }
+        context.audioRecordingService.startRecordingOverride = { throw NSError(domain: "Microphone", code: 1) }
+        _ = context.dictationViewModel.apiStartRecording()
+        await context.dictationViewModel.testingWaitForRecordingStart()
+        XCTAssertEqual(muffle.starts, 0)
+    }
+
+    @MainActor
+    func testAudioMuffleFailureDoesNotCancelDictation() async throws {
+        let directory = try TestSupport.makeTemporaryDirectory()
+        defer { TestSupport.remove(directory) }
+        let muffle = MockAudioMuffleService()
+        muffle.startError = NSError(domain: "Muffle", code: 1, userInfo: [NSLocalizedDescriptionKey: "Audio permission denied"])
+        let context = Self.makeDictationContext(appSupportDirectory: directory, audioMuffleService: muffle)
+        context.dictationViewModel.audioMuffleEnabled = true
+        defer { context.dictationViewModel.audioMuffleEnabled = false }
+        context.audioRecordingService.hasMicrophonePermissionOverride = true
+        context.audioRecordingService.inputAvailabilityOverride = { _ in true }
+        context.audioRecordingService.startRecordingOverride = {}
+        _ = context.dictationViewModel.apiStartRecording()
+        await context.dictationViewModel.testingWaitForRecordingStart()
+        XCTAssertEqual(context.dictationViewModel.state, .recording)
+        XCTAssertEqual(context.dictationViewModel.audioMuffleError, "Audio permission denied")
+        context.dictationViewModel.handleCancelHotkey()
+        context.dictationViewModel.handleCancelHotkey()
+        await context.dictationViewModel.testingWaitForRecordingCleanup()
+    }
+
+    @MainActor
+    func testAudioMuffleAndMediaPauseAreMutuallyExclusive() throws {
+        let directory = try TestSupport.makeTemporaryDirectory()
+        defer { TestSupport.remove(directory) }
+        let context = Self.makeDictationContext(appSupportDirectory: directory)
+        defer {
+            context.dictationViewModel.audioMuffleEnabled = false
+            context.dictationViewModel.mediaPauseEnabled = false
+        }
+        context.dictationViewModel.mediaPauseEnabled = true
+        context.dictationViewModel.audioMuffleEnabled = true
+        XCTAssertFalse(context.dictationViewModel.mediaPauseEnabled)
+        context.dictationViewModel.mediaPauseEnabled = true
+        XCTAssertFalse(context.dictationViewModel.audioMuffleEnabled)
+    }
+
+    @MainActor
     private final class MockAudioDuckingService: AudioDuckingService {
         let onRestore: () -> Void
         let onDuck: (Float) -> Void
@@ -11945,6 +12058,7 @@ final class TypeWhisperIntegrationTests: XCTestCase {
         appSupportDirectory: URL,
         browserURLResolver: BrowserURLResolver = BrowserURLResolver(),
         audioDuckingService: AudioDuckingService? = nil,
+        audioMuffleService: AudioMuffling? = nil,
         mediaPlaybackService: MediaPlaybackService? = nil,
         soundService: SoundService? = nil,
         audioDeviceTransportResolver: AudioDeviceTransportResolving = CoreAudioDeviceTransportResolver(),
@@ -12070,6 +12184,7 @@ final class TypeWhisperIntegrationTests: XCTestCase {
             workflowService: workflowService,
             translationService: nil,
             audioDuckingService: audioDuckingService,
+            audioMuffleService: audioMuffleService ?? AudioMuffleService(),
             dictionaryService: dictionaryService,
             licenseService: licenseService,
             targetAppCorrectionLearningService: targetAppCorrectionLearningService,
@@ -12093,6 +12208,7 @@ final class TypeWhisperIntegrationTests: XCTestCase {
         dictationViewModel.spokenFeedbackEnabled = false
         dictationViewModel.audioDuckingEnabled = false
         dictationViewModel.mediaPauseEnabled = false
+        dictationViewModel.audioMuffleEnabled = false
 
         return DictationContext(
             dictationViewModel: dictationViewModel,

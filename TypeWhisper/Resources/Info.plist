@@ -39,6 +39,8 @@
 	<true/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>TypeWhisper filters system audio during dictation so music can keep playing with reduced high frequencies. This audio is not saved or sent anywhere.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>TypeWhisper Local needs microphone access for speech-to-text transcription.</string>
 	<key>NSServices</key>

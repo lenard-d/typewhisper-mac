@@ -70,9 +70,9 @@ private final class AudioMuffleSession {
     var isOutputValid: Bool {
         guard let filter, !AudioMuffleFilterHasFailed(filter),
               let currentOutput: AudioObjectID = try? readProperty(
-                AudioObjectID(kAudioObjectSystemObject), selector: kAudioHardwarePropertyDefaultOutputDevice
+                AudioObjectID(kAudioObjectSystemObject), selector: kAudioHardwarePropertyDefaultOutputDevice, as: AudioObjectID.self
               ), currentOutput == outputID,
-              let currentRate: Double = try? readProperty(outputID, selector: kAudioDevicePropertyNominalSampleRate) else {
+              let currentRate: Double = try? readProperty(outputID, selector: kAudioDevicePropertyNominalSampleRate, as: Double.self) else {
             return false
         }
         return currentRate == sampleRate
@@ -81,8 +81,8 @@ private final class AudioMuffleSession {
     @available(macOS 14.2, *)
     func start() throws {
         do {
-            outputID = try readProperty(AudioObjectID(kAudioObjectSystemObject), selector: kAudioHardwarePropertyDefaultOutputDevice)
-            let outputUID: CFString = try readProperty(outputID, selector: kAudioDevicePropertyDeviceUID)
+            outputID = try readProperty(AudioObjectID(kAudioObjectSystemObject), selector: kAudioHardwarePropertyDefaultOutputDevice, as: AudioObjectID.self)
+            let outputUID: CFString = try readProperty(outputID, selector: kAudioDevicePropertyDeviceUID, as: CFString.self)
             var pid = ProcessInfo.processInfo.processIdentifier
             var ownProcess: AudioObjectID = 0
             var size = UInt32(MemoryLayout<AudioObjectID>.size)
@@ -97,7 +97,7 @@ private final class AudioMuffleSession {
             // Normal playback returns as soon as the IOProc stops, including on app exit.
             description.muteBehavior = .mutedWhenTapped
             try check(AudioHardwareCreateProcessTap(description, &tapID))
-            let format: AudioStreamBasicDescription = try readProperty(tapID, selector: kAudioTapPropertyFormat)
+            let format: AudioStreamBasicDescription = try readProperty(tapID, selector: kAudioTapPropertyFormat, as: AudioStreamBasicDescription.self)
             guard format.mFormatID == kAudioFormatLinearPCM,
                   format.mFormatFlags & kAudioFormatFlagIsFloat != 0,
                   format.mFormatFlags & kAudioFormatFlagIsPacked != 0,
@@ -108,7 +108,7 @@ private final class AudioMuffleSession {
             }
             filter = newFilter
             sampleRate = format.mSampleRate
-            let tapUID: CFString = try readProperty(tapID, selector: kAudioTapPropertyUID)
+            let tapUID: CFString = try readProperty(tapID, selector: kAudioTapPropertyUID, as: CFString.self)
             let aggregate: [String: Any] = [
                 kAudioAggregateDeviceNameKey: "TypeWhisper Audio Muffle",
                 kAudioAggregateDeviceUIDKey: UUID().uuidString,
@@ -120,7 +120,7 @@ private final class AudioMuffleSession {
             ]
             try check(AudioHardwareCreateAggregateDevice(aggregate as CFDictionary, &aggregateID))
             let outputFormat: AudioStreamBasicDescription = try readProperty(
-                aggregateID, selector: kAudioDevicePropertyStreamFormat, scope: kAudioDevicePropertyScopeOutput
+                aggregateID, selector: kAudioDevicePropertyStreamFormat, as: AudioStreamBasicDescription.self, scope: kAudioDevicePropertyScopeOutput
             )
             guard outputFormat.mFormatID == format.mFormatID,
                   outputFormat.mFormatFlags == format.mFormatFlags,
@@ -181,7 +181,8 @@ private final class AudioMuffleSession {
         AudioObjectPropertyAddress(mSelector: selector, mScope: scope, mElement: kAudioObjectPropertyElementMain)
     }
 
-    private func readProperty<T>(_ object: AudioObjectID, selector: AudioObjectPropertySelector, scope: AudioObjectPropertyScope = kAudioObjectPropertyScopeGlobal) throws -> T {
+    // Specify the HAL value type so try? cannot infer an Optional with a different byte size.
+    private func readProperty<T>(_ object: AudioObjectID, selector: AudioObjectPropertySelector, as type: T.Type, scope: AudioObjectPropertyScope = kAudioObjectPropertyScopeGlobal) throws -> T {
         var address = propertyAddress(selector, scope: scope)
         var size = UInt32(MemoryLayout<T>.size)
         let storage = UnsafeMutableRawPointer.allocate(byteCount: Int(size), alignment: MemoryLayout<T>.alignment)

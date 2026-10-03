@@ -18,6 +18,12 @@ To use your own signing identity:
 echo 'DEVELOPMENT_TEAM = YOUR_TEAM_ID' > CodeSigning.local.xcconfig
 ```
 
+For a local build that you use each day, keep the same certificate and Team ID
+across updates. Ad-hoc signing and an incomplete App Group ID can cause repeated
+Keychain and app-data permission requests. See the
+[local permission repair guide](docs/local-permission-repair.md) for diagnosis,
+a helper script, and the verified repair procedure.
+
 ## Development Setup
 
 - **Product runtime support:** macOS 14.0+

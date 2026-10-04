@@ -5,8 +5,6 @@ on:
     tags:
       - 'v*'
       - '!v*-daily*'
-  schedule:
-    - cron: '0 4 * * *'
   workflow_dispatch:
     inputs:
       release_tag:
@@ -54,7 +52,7 @@ jobs:
             echo "should_run=true" >> "$GITHUB_OUTPUT"
             echo "Requested release tag: $REQUESTED_TAG"
           else
-            # Schedule or manual trigger - resolve the daily tag name
+            # Manual trigger - resolve the daily tag name
             # Tag format must match the exclusion pattern in push.tags above.
             # Do not create the tag here: a failed downstream job would otherwise
             # leave HEAD tagged and block all future retries for the same commit.
@@ -116,7 +114,7 @@ jobs:
         with:
           xcode-version: "26.6"
 
-      # Scheduled runs on main seed the package cache that pull request builds restore.
+      # Release runs seed the package cache that pull request builds restore.
       # The signed build job below always resolves packages from scratch.
       - name: Cache Swift packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
